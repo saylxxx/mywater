@@ -6,6 +6,7 @@
         <h3 class="text-muted mt-0"></h3>
       </div>
       <Sparkline
+        ref="demo1"
         :options="{
                                         type:'line',
                                         height:80,
@@ -56,8 +57,10 @@
 <script>
 import axios from "axios";
 
-// const API_URL = "http://dgc:9453";
-const API_URL = "http://bobo:9453";
+const API_URL = process.env.VUE_APP_API_URL;
+const API_TOKEN = process.env.VUE_APP_API_TOKEN;
+
+const API_PLANETARY_URL = API_URL + "/planetary/apod?api_key=" + API_TOKEN;
 
 // request form
 const formRequest = axios.create({
@@ -114,28 +117,28 @@ export default {
       let vm = this;
       // start progress
       vm.setProgress(50);
-      vm.s_values = [1, 3, 4];
+
+      vm.$refs.demo1.value = [5, 9, 4];
     },
     function_a() {
       console.log("..function_a..");
 
-      // axios.get(API_URL).then(res => {
-      //   console.log(res);
-      // });
+      let vm = this;
+      vm.reload();
     },
     function_b() {
-      console.log("..function_a..");
+      console.log("..function_b..");
 
-      // axios.get(API_URL).then(res => {
-      //   console.log(res);
-      // });
+      axios.get(API_PLANETARY_URL).then(res => {
+        console.log(res);
+      });
     },
     function_c() {
-      console.log("..function_a..");
+      console.log("..function_c..");
 
-      // axios.get(API_URL).then(res => {
-      //   console.log(res);
-      // });
+      axios.get(API_PLANETARY_URL).then(res => {
+        console.log(res);
+      });
     }
   }
 };
