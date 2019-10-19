@@ -1,4 +1,4 @@
-import router from '@/mao/router';
+import router from '@/app/router';
 
 // page
 export const routeLogin = () => {

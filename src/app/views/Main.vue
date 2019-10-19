@@ -77,7 +77,7 @@ const jsonRequest = axios.create({
   }
 });
 
-import Sparkline from "@/mao/components/Common/Sparklines";
+import Sparkline from "@/app/components/Common/Sparklines";
 
 export default {
   components: {
