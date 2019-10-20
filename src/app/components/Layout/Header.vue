@@ -9,7 +9,7 @@
             W
           </div>
           <div class="brand-logo-collapsed">
-            W
+            myWater
           </div>
         </a>
       </div>

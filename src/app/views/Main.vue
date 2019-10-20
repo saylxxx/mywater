@@ -46,10 +46,45 @@
         <div></div>
       </div>
     </div>
-
-    <b-button class="btn btn-oval" type="button" @click.prevent="function_a">功能 a</b-button>
+    <b-button class="btn btn-oval" type="button" @click.prevent="function_b">do something</b-button>
+    <!-- <b-button class="btn btn-oval" type="button" @click.prevent="function_a">功能 a</b-button>
     <b-button class="btn btn-oval" type="button" @click.prevent="function_b">功能 b</b-button>
-    <b-button class="btn btn-oval" type="button" @click.prevent="function_c">功能 c</b-button>
+    <b-button class="btn btn-oval" type="button" @click.prevent="function_c">功能 c</b-button>-->
+    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+
+    <div style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <line-chart :chart-data="lineChartData" />
+    </div>
+
+    <div :gutter="32">
+      <div :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <raddar-chart />
+        </div>
+      </div>
+      <div :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <pie-chart />
+        </div>
+      </div>
+      <div :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <bar-chart />
+        </div>
+      </div>
+    </div>
+
+    <!-- <div :gutter="8">
+      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
+        <transaction-table />
+      </el-col>
+      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
+        <todo-list />
+      </el-col>
+      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
+        <box-card />
+      </el-col>
+    </div> -->
   </div>
   <!-- END card-->
 </template>
@@ -61,6 +96,25 @@ const API_URL = process.env.VUE_APP_API_URL;
 const API_TOKEN = process.env.VUE_APP_API_TOKEN;
 
 const API_PLANETARY_URL = API_URL + "/planetary/apod?api_key=" + API_TOKEN;
+
+const lineChartData = {
+  newVisitis: {
+    expectedData: [100, 120, 161, 134, 105, 160, 165],
+    actualData: [120, 82, 91, 154, 162, 140, 145]
+  },
+  messages: {
+    expectedData: [200, 192, 120, 144, 160, 130, 140],
+    actualData: [180, 160, 151, 106, 145, 150, 130]
+  },
+  purchases: {
+    expectedData: [80, 100, 121, 104, 105, 90, 100],
+    actualData: [120, 90, 100, 138, 142, 130, 130]
+  },
+  shoppings: {
+    expectedData: [130, 140, 141, 142, 145, 150, 160],
+    actualData: [120, 82, 91, 154, 162, 140, 130]
+  }
+};
 
 // request form
 const formRequest = axios.create({
@@ -81,10 +135,20 @@ const jsonRequest = axios.create({
 });
 
 import Sparkline from "@/app/components/Common/Sparklines";
+import PanelGroup from "@/app/components/Custom/Other/PanelGroup";
+import LineChart from '@/app/components/Custom/Other/LineChart'
+import RaddarChart from '@/app/components/Custom/Other/RaddarChart'
+import PieChart from '@/app/components/Custom/Other/PieChart'
+import BarChart from '@/app/components/Custom/Other/BarChart'
 
 export default {
   components: {
-    Sparkline
+    Sparkline,
+    PanelGroup,
+    LineChart,
+    RaddarChart,
+    PieChart,
+    BarChart
   },
   computed: {},
   beforeCreate() {
@@ -93,38 +157,63 @@ export default {
   created() {
     console.log("..created..");
     let vm = this;
+
+    setInterval(vm.do_setp, 1000);
+
+    axios.get(API_PLANETARY_URL).then(res => {
+      console.log(res);
+    });
   },
   destroyed() {
     console.log("..destroyed..");
   },
   data() {
     return {
+      step_progress: 10,
       progress: 0,
       progressStyle: { width: "0%" },
       msg: "",
-      s_values: []
+      s_values: [],
+      lineChartData: lineChartData.newVisitis
     };
   },
   watch: {},
   methods: {
+    handleSetLineChartData(type) {
+      this.lineChartData = lineChartData[type];
+    },
     setProgress(value) {
       let vm = this;
       vm.progress = value;
       vm.progressStyle.width = Math.floor(value) + "%";
     },
+    do_setp() {
+      console.log("..do_setp..");
+      let vm = this;
+      // start progress
+      let step = Math.floor(Math.random() * vm.step_progress) + 5;
+      let next_progress = step + vm.progress;
+      if (next_progress >= 100) {
+        next_progress = 100;
+        vm.msg = "completed";
+      } else {
+        vm.msg = "processing.." + Math.floor(vm.progress) + "%";
+      }
+
+      vm.setProgress(next_progress);
+    },
     reload() {
       console.log("..reload..");
       let vm = this;
-      // start progress
-      vm.setProgress(50);
-
-      vm.$refs.demo1.value = [5, 9, 4];
+      vm.setProgress(0);
+      vm.msg = "start";
     },
     function_a() {
       console.log("..function_a..");
 
-      let vm = this;
-      vm.reload();
+      axios.get(API_PLANETARY_URL).then(res => {
+        console.log(res);
+      });
     },
     function_b() {
       console.log("..function_b..");
@@ -135,10 +224,6 @@ export default {
     },
     function_c() {
       console.log("..function_c..");
-
-      axios.get(API_PLANETARY_URL).then(res => {
-        console.log(res);
-      });
     }
   }
 };
