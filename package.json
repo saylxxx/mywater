@@ -20,7 +20,7 @@
         "@lingui/core": "^2.8.3",
         "@panter/vue-i18next": "0.13.0",
         "animate.css": "3.7.0",
-        "axios": "^0.19.0",
+        "axios": "^0.21.1",
         "babel-polyfill": "^6.26.0",
         "bootstrap": "4.3.1",
         "bootstrap-vue": "2.0.0-rc.11",
